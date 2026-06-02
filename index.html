@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -9,11 +10,55 @@
 
 <style>
 body{margin:0;font-family:Poppins;background:#0f0f0f;color:#fff}
-.hero{text-align:center;padding:60px;background:#111}
-.hero h1{color:#d4af37;font-size:3rem}
-.container{max-width:1000px;margin:auto;padding:20px}
+.hero{text-align:center;padding:50px;background:#111}
+.hero h1{color:#d4af37}
+.container{max-width:900px;margin:auto;padding:20px}
+
 .card{background:#181818;padding:15px;border-radius:12px;margin:10px 0}
-.whats{position:fixed;bottom:20px;right:20px;background:#25d366;padding:15px;border-radius:50px;color:#fff;text-decoration:none}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+gap:10px;
+margin-top:10px;
+}
+
+.slot{
+padding:12px;
+border-radius:10px;
+text-align:center;
+cursor:pointer;
+font-weight:600;
+}
+
+.free{background:#1b3a1f}
+.busy{background:#3a1b1b;cursor:not-allowed;opacity:0.7}
+
+input,select,button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+}
+
+button{
+background:#d4af37;
+font-weight:700;
+cursor:pointer;
+}
+
+.whats{
+position:fixed;
+bottom:20px;
+right:20px;
+background:#25d366;
+padding:15px 20px;
+border-radius:50px;
+color:#fff;
+text-decoration:none;
+font-weight:700;
+}
 </style>
 </head>
 
@@ -29,26 +74,43 @@ body{margin:0;font-family:Poppins;background:#0f0f0f;color:#fff}
 <h2>Serviços</h2>
 <div id="servicos">Carregando...</div>
 
+<h2>Horários</h2>
+<div class="grid" id="horarios"></div>
+
+<h2>Agendamento</h2>
+
+<form id="form">
+<input id="nome" placeholder="Nome" required>
+<input id="telefone" placeholder="WhatsApp" required>
+
+<select id="servico"></select>
+
+<button type="submit">Confirmar Agendamento</button>
+</form>
+
 </div>
 
 <a class="whats" href="https://wa.me/5575997142719">WhatsApp</a>
 
 <script>
+
 const SUPABASE_URL = "https://scugbsbfxwtfepislpvy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3DRRKcPZj82x65GzTlVrOg_18W-8Zbw";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let selectedHorario = "";
+
+/* ===================== SERVIÇOS ===================== */
 async function loadServices(){
+
 const { data } = await supabase.from("servicos").select("*");
 
 const box = document.getElementById("servicos");
-box.innerHTML = "";
+const select = document.getElementById("servico");
 
-if(!data){
-box.innerHTML = "Erro ao carregar";
-return;
-}
+box.innerHTML = "";
+select.innerHTML = "";
 
 data.forEach(s=>{
 box.innerHTML += `
@@ -56,10 +118,93 @@ box.innerHTML += `
 <b>${s.nome}</b><br>
 R$ ${s.preco}
 </div>`;
+
+select.innerHTML += `<option value="${s.nome}">${s.nome}</option>`;
 });
 }
 
+/* ===================== HORÁRIOS ===================== */
+async function loadHorarios(){
+
+const horarios = [
+"08:00","09:00","10:00","11:00",
+"14:00","15:00","16:00","17:00"
+];
+
+const { data } = await supabase
+.from("agendamentos")
+.select("*");
+
+const box = document.getElementById("horarios");
+box.innerHTML = "";
+
+horarios.forEach(h=>{
+
+let ocupado = data?.find(a => a.horario === h);
+
+box.innerHTML += `
+<div class="slot ${ocupado ? "busy" : "free"}"
+onclick="selectHour('${h}', ${ocupado ? true : false})">
+${h}
+</div>`;
+});
+}
+
+/* ===================== SELECT HORÁRIO ===================== */
+function selectHour(h, ocupado){
+
+if(ocupado){
+alert("Horário ocupado!");
+return;
+}
+
+selectedHorario = h;
+alert("Selecionado: " + h);
+}
+
+/* ===================== AGENDAR ===================== */
+document.getElementById("form").addEventListener("submit", async (e)=>{
+e.preventDefault();
+
+if(!selectedHorario){
+alert("Selecione um horário");
+return;
+}
+
+await supabase.from("agendamentos").insert([{
+nome: document.getElementById("nome").value,
+telefone: document.getElementById("telefone").value,
+servico: document.getElementById("servico").value,
+horario: selectedHorario,
+status: "pendente"
+}]);
+
+alert("Agendado com sucesso!");
+selectedHorario = "";
+loadHorarios();
+});
+
+/* ===================== TEMPO REAL ===================== */
+supabase
+.channel('realtime-agendamentos')
+.on(
+'postgres_changes',
+{
+event: '*',
+schema: 'public',
+table: 'agendamentos'
+},
+(payload) => {
+console.log("Atualização realtime:", payload);
+loadHorarios();
+}
+)
+.subscribe();
+
+/* ===================== INIT ===================== */
 loadServices();
+loadHorarios();
+
 </script>
 
 </body>
