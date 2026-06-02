@@ -1,209 +1,65 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corte10 | Sistema Completo</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Corte10 | Agendamento</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Poppins,sans-serif}
-body{background:#0f0f0f;color:#fff}
-
-/* LOGIN */
-#loginBox{
-position:fixed;
-inset:0;
-display:flex;
-align-items:center;
-justify-content:center;
-background:#000;
-z-index:9999;
-}
-.login-card{
-background:#181818;
-padding:30px;
-border-radius:15px;
-width:300px;
-}
-input,button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border-radius:10px;
-border:none;
-}
-button{
-background:#d4af37;
-font-weight:700;
-cursor:pointer;
-}
-
-/* HERO */
-.hero{text-align:center;padding:50px;background:#111}
-.hero h1{font-size:3rem;color:#d4af37}
-.hero p{color:#aaa}
-
-/* GRID */
-.container{max-width:1100px;margin:auto;padding:20px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
-.card{background:#181818;padding:20px;border-radius:15px}
-
-/* ADMIN */
-#adminPanel{display:none;padding:20px}
-table{width:100%;margin-top:20px;border-collapse:collapse}
-td,th{padding:10px;border-bottom:1px solid #333}
-
-/* WHATS */
-.whats{
-position:fixed;bottom:20px;right:20px;
-background:#25d366;padding:15px 20px;border-radius:50px;
-color:#fff;text-decoration:none;font-weight:700;
-}
+body{margin:0;font-family:Poppins;background:#0f0f0f;color:#fff}
+.hero{text-align:center;padding:60px;background:#111}
+.hero h1{color:#d4af37;font-size:3rem}
+.container{max-width:1000px;margin:auto;padding:20px}
+.card{background:#181818;padding:15px;border-radius:12px;margin:10px 0}
+.whats{position:fixed;bottom:20px;right:20px;background:#25d366;padding:15px;border-radius:50px;color:#fff;text-decoration:none}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN ADMIN -->
-<div id="loginBox">
-<div class="login-card">
-<h3>Acesso Admin</h3>
-<input type="password" id="senha" placeholder="Digite a senha">
-<button onclick="login()">Entrar</button>
-</div>
-</div>
-
-<!-- SITE CLIENTE -->
-<div id="site">
-
 <div class="hero">
 <h1>CORTE10</h1>
-<p>Cortes a partir de R$10,00</p>
+<p>Cortes a partir de R$10</p>
 </div>
 
 <div class="container">
 
 <h2>Serviços</h2>
-<div class="grid" id="servicos">
-<div class="card">Carregando...</div>
-</div>
-
-</div>
-
-</div>
-
-<!-- ADMIN -->
-<div id="adminPanel">
-
-<h2>Painel Administrativo</h2>
-
-<button onclick="logout()">Sair</button>
-
-<h3>Agendamentos</h3>
-<table>
-<thead>
-<tr>
-<th>Nome</th>
-<th>Telefone</th>
-<th>Serviço</th>
-<th>Status</th>
-</tr>
-</thead>
-<tbody id="agendamentos">
-<tr><td>Carregando...</td></tr>
-</tbody>
-</table>
+<div id="servicos">Carregando...</div>
 
 </div>
 
 <a class="whats" href="https://wa.me/5575997142719">WhatsApp</a>
 
 <script>
-
-/* ===== SUPABASE ===== */
 const SUPABASE_URL = "https://scugbsbfxwtfepislpvy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3DRRKcPZj82x65GzTlVrOg_18W-8Zbw";
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-/* ===== LOGIN ADMIN ===== */
-const ADMIN_PASSWORD = "1234"; // MUDE AQUI
-
-function login(){
-const senha = document.getElementById("senha").value;
-
-if(senha === ADMIN_PASSWORD){
-document.getElementById("loginBox").style.display="none";
-document.getElementById("adminPanel").style.display="block";
-document.getElementById("site").style.display="none";
-loadAdmin();
-}else{
-alert("Senha incorreta");
-}
-}
-
-function logout(){
-location.reload();
-}
-
-/* ===== CARREGAR SERVIÇOS ===== */
 async function loadServices(){
-
-const { data, error } = await supabase
-.from("servicos")
-.select("*");
+const { data } = await supabase.from("servicos").select("*");
 
 const box = document.getElementById("servicos");
 box.innerHTML = "";
 
-if(error || !data){
-box.innerHTML = "<div class='card'>Erro ao carregar serviços</div>";
+if(!data){
+box.innerHTML = "Erro ao carregar";
 return;
 }
 
-data.forEach(s => {
+data.forEach(s=>{
 box.innerHTML += `
 <div class="card">
-<h3>${s.nome}</h3>
-<p>R$ ${s.preco}</p>
+<b>${s.nome}</b><br>
+R$ ${s.preco}
 </div>`;
 });
 }
 
-/* ===== ADMIN ===== */
-async function loadAdmin(){
-
-const { data } = await supabase
-.from("agendamentos")
-.select("*");
-
-const box = document.getElementById("agendamentos");
-box.innerHTML = "";
-
-if(!data || data.length === 0){
-box.innerHTML = "<tr><td colspan='4'>Sem agendamentos</td></tr>";
-return;
-}
-
-data.forEach(a=>{
-box.innerHTML += `
-<tr>
-<td>${a.nome}</td>
-<td>${a.telefone}</td>
-<td>${a.servico}</td>
-<td>${a.status || "pendente"}</td>
-</tr>`;
-});
-}
-
-/* INIT */
 loadServices();
-
 </script>
 
 </body>
