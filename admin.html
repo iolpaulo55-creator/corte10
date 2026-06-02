@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -9,8 +10,6 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -125,45 +124,12 @@ text-align:left;
 border-bottom:1px solid #2d2d2d;
 }
 
-.badge{
-padding:8px 12px;
-border-radius:20px;
-font-size:12px;
-font-weight:600;
-}
-
-.confirmado{
-background:#123a1b;
-color:#4cff88;
-}
-
-.pendente{
-background:#4d4208;
-color:#ffd93d;
-}
-
-.cancelado{
-background:#3a1212;
-color:#ff6b6b;
-}
-
 .btn{
 padding:10px 15px;
 border:none;
 border-radius:10px;
 cursor:pointer;
 font-weight:600;
-margin-right:5px;
-}
-
-.btn-green{
-background:#25d366;
-color:white;
-}
-
-.btn-red{
-background:#ff4d4d;
-color:white;
 }
 
 .btn-gold{
@@ -189,6 +155,17 @@ grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
 gap:20px;
 }
 
+.back-site{
+display:inline-block;
+margin-top:20px;
+color:#888;
+text-decoration:none;
+}
+
+.back-site:hover{
+color:#d4af37;
+}
+
 @media(max-width:900px){
 
 body{
@@ -204,6 +181,7 @@ border-bottom:1px solid #222;
 }
 
 </style>
+
 </head>
 
 <body>
@@ -217,16 +195,15 @@ border-bottom:1px solid #222;
 <div class="menu">
 
 <button>📅 Agenda</button>
-
 <button>👥 Clientes</button>
-
 <button>✂️ Serviços</button>
-
 <button>⚙️ Configurações</button>
 
-<button>🚪 Sair</button>
-
 </div>
+
+<a href="index.html" class="back-site">
+← Voltar ao Site
+</a>
 
 </aside>
 
@@ -236,7 +213,9 @@ border-bottom:1px solid #222;
 
 <h1>Painel Administrativo</h1>
 
-<button class="btn btn-gold">
+<button
+id="btnNovoHorario"
+class="btn btn-gold">
 + Novo Horário
 </button>
 
@@ -246,22 +225,22 @@ border-bottom:1px solid #222;
 
 <div class="card">
 <h3>Agendamentos Hoje</h3>
-<span>12</span>
+<span id="agHoje">0</span>
 </div>
 
 <div class="card">
 <h3>Confirmados</h3>
-<span>8</span>
+<span id="confirmados">0</span>
 </div>
 
 <div class="card">
 <h3>Pendentes</h3>
-<span>3</span>
+<span id="pendentes">0</span>
 </div>
 
 <div class="card">
-<h3>Bloqueados</h3>
-<span>1</span>
+<h3>Horários Livres</h3>
+<span id="livres">0</span>
 </div>
 
 </div>
@@ -276,47 +255,18 @@ border-bottom:1px solid #222;
 <tr>
 <th>Horário</th>
 <th>Cliente</th>
+<th>Telefone</th>
 <th>Serviço</th>
 <th>Status</th>
 <th>Ações</th>
 </tr>
 </thead>
 
-<tbody>
+<tbody id="listaAgendamentos">
 
 <tr>
-<td>08:00</td>
-<td>João</td>
-<td>Corte Social</td>
-<td>
-<span class="badge confirmado">
-Confirmado
-</span>
-</td>
-<td>
-<button class="btn btn-red">
-Cancelar
-</button>
-</td>
-</tr>
-
-<tr>
-<td>10:00</td>
-<td>Pedro</td>
-<td>Degradê</td>
-<td>
-<span class="badge pendente">
-Pendente
-</span>
-</td>
-<td>
-<button class="btn btn-green">
-Confirmar
-</button>
-
-<button class="btn btn-red">
-Cancelar
-</button>
+<td colspan="6">
+Carregando agendamentos...
 </td>
 </tr>
 
@@ -335,17 +285,47 @@ Cancelar
 <div>
 
 <label>Nome do Serviço</label>
-<input type="text" placeholder="Ex: Corte Social">
+
+<input
+id="nomeServico"
+type="text"
+placeholder="Ex: Corte Social">
 
 <label>Preço</label>
-<input type="number" placeholder="10">
+
+<input
+id="precoServico"
+type="number"
+placeholder="10">
 
 <label>Duração (minutos)</label>
-<input type="number" placeholder="30">
 
-<button class="btn btn-gold">
+<input
+id="duracaoServico"
+type="number"
+placeholder="30">
+
+<button
+id="btnSalvarServico"
+class="btn btn-gold">
+
 Salvar Serviço
+
 </button>
+
+</div>
+
+<div>
+
+<h3 style="margin-bottom:15px;">
+Serviços Cadastrados
+</h3>
+
+<div id="listaServicosAdmin">
+
+Carregando serviços...
+
+</div>
 
 </div>
 
@@ -384,6 +364,14 @@ Salvar Configurações
 </div>
 
 </main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script src="supabase.js"></script>
+
+<script src="admin.js"></script>
 
 </body>
 
