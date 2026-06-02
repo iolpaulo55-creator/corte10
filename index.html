@@ -2,315 +2,355 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Corte10 | Agendamento Online</title>
+<title>Corte10 | Agendamento Online</title>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
 
-        body {
-            background: #0f0f0f;
-            color: white;
-        }
+body{
+background:#0f0f0f;
+color:white;
+}
 
-        .hero {
-            text-align: center;
-            padding: 60px 20px;
-            background: linear-gradient(135deg, #151515, #000);
-        }
+.hero{
+text-align:center;
+padding:60px 20px;
+background:linear-gradient(135deg,#151515,#000);
+}
 
-        .hero h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-        }
+.hero h1{
+font-size:3rem;
+margin-bottom:10px;
+}
 
-        .hero p {
-            color: #bbb;
-        }
+.hero p{
+color:#bbb;
+}
 
-        .btn-primary {
-            background: #d4af37;
-            color: black;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 25px;
-            transition: .3s;
-        }
+.btn-primary{
+background:#d4af37;
+color:black;
+border:none;
+padding:15px 30px;
+border-radius:12px;
+font-weight:700;
+cursor:pointer;
+margin-top:25px;
+transition:.3s;
+}
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-        }
+.btn-primary:hover{
+transform:translateY(-2px);
+}
 
-        section {
-            max-width: 1200px;
-            margin: auto;
-            padding: 40px 20px;
-        }
+section{
+max-width:1200px;
+margin:auto;
+padding:40px 20px;
+}
 
-        .title {
-            margin-bottom: 25px;
-            font-size: 2rem;
-        }
+.title{
+margin-bottom:25px;
+font-size:2rem;
+}
 
-        .services {
-            display: grid;
-            grid-template-columns: repeat(auto-fit,minmax(250px,1fr));
-            gap: 20px;
-        }
+.services{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+}
 
-        .service-card {
-            background: #181818;
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid #262626;
-            transition: .3s;
-        }
+.service-card{
+background:#181818;
+border-radius:16px;
+padding:25px;
+border:1px solid #262626;
+transition:.3s;
+}
 
-        .service-card:hover {
-            transform: translateY(-5px);
-        }
+.service-card:hover{
+transform:translateY(-5px);
+}
 
-        .service-card h3 {
-            margin-bottom: 10px;
-        }
+.service-card h3{
+margin-bottom:10px;
+}
 
-        .price {
-            color: #d4af37;
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
+.price{
+color:#d4af37;
+font-size:1.5rem;
+font-weight:bold;
+}
 
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
-            gap: 15px;
-        }
+.schedule-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+gap:15px;
+}
 
-        .time-card {
-            padding: 15px;
-            text-align: center;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: .3s;
-        }
+.time-card{
+padding:15px;
+text-align:center;
+border-radius:12px;
+font-weight:600;
+cursor:pointer;
+transition:.3s;
+}
 
-        .available {
-            background: #123a1b;
-            color: #4cff88;
-        }
+.available{
+background:#123a1b;
+color:#4cff88;
+}
 
-        .occupied {
-            background: #3a1212;
-            color: #ff6b6b;
-            cursor: not-allowed;
-        }
+.occupied{
+background:#3a1212;
+color:#ff6b6b;
+cursor:not-allowed;
+}
 
-        .pending {
-            background: #4d4208;
-            color: #ffd93d;
-        }
+.pending{
+background:#4d4208;
+color:#ffd93d;
+}
 
-        .legend {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
+.legend{
+display:flex;
+gap:20px;
+margin-bottom:20px;
+flex-wrap:wrap;
+}
 
-        .legend span {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+.legend span{
+display:flex;
+align-items:center;
+gap:8px;
+}
 
-        .dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
+.dot{
+width:12px;
+height:12px;
+border-radius:50%;
+}
 
-        .green { background: #4cff88; }
-        .red { background: #ff6b6b; }
-        .yellow { background: #ffd93d; }
+.green{background:#4cff88;}
+.red{background:#ff6b6b;}
+.yellow{background:#ffd93d;}
 
-        .form-container {
-            background: #181818;
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 40px;
-        }
+.form-container{
+background:#181818;
+border-radius:20px;
+padding:30px;
+margin-top:40px;
+}
 
-        .form-container h2 {
-            margin-bottom: 20px;
-        }
+.form-container h2{
+margin-bottom:20px;
+}
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+.form-group{
+margin-bottom:15px;
+}
 
-        input,
-        select {
-            width: 100%;
-            padding: 14px;
-            border-radius: 10px;
-            border: 1px solid #333;
-            background: #101010;
-            color: white;
-        }
+input,
+select{
+width:100%;
+padding:14px;
+border-radius:10px;
+border:1px solid #333;
+background:#101010;
+color:white;
+}
 
-        .whatsapp {
-            position: fixed;
-            right: 20px;
-            bottom: 20px;
-            background: #25d366;
-            color: white;
-            text-decoration: none;
-            padding: 15px 25px;
-            border-radius: 50px;
-            font-weight: 600;
-            z-index: 999;
-        }
+.whatsapp{
+position:fixed;
+right:20px;
+bottom:20px;
+background:#25d366;
+color:white;
+text-decoration:none;
+padding:15px 25px;
+border-radius:50px;
+font-weight:600;
+z-index:999;
+}
 
-        footer {
-            text-align: center;
-            padding: 40px;
-            color: #888;
-        }
-    </style>
+footer{
+text-align:center;
+padding:40px;
+color:#888;
+}
+
+.admin-link{
+color:#666;
+text-decoration:none;
+font-size:14px;
+transition:.3s;
+}
+
+.admin-link:hover{
+color:#d4af37;
+}
+
+</style>
 </head>
 
 <body>
 
-    <header class="hero">
-        <h1>✂️ CORTE10</h1>
-        <p>Cortes a partir de R$10,00</p>
+<header class="hero">
 
-        <button class="btn-primary">
-            Agendar Horário
-        </button>
-    </header>
+<h1>✂️ CORTE10</h1>
 
-    <section>
+<p>Cortes a partir de R$10,00</p>
 
-        <h2 class="title">Nossos Serviços</h2>
+<button class="btn-primary">
+Agendar Horário
+</button>
 
-        <div class="services">
+</header>
 
-            <div class="service-card">
-                <h3>Corte Social</h3>
-                <p class="price">R$ 10,00</p>
-            </div>
+<section>
 
-            <div class="service-card">
-                <h3>Degradê</h3>
-                <p class="price">R$ 30,00</p>
-            </div>
+<h2 class="title">Nossos Serviços</h2>
 
-            <div class="service-card">
-                <h3>Combo Barba + Cabelo</h3>
-                <p class="price">R$ 40,00</p>
-            </div>
+<div class="services" id="listaServicos">
 
-            <div class="service-card">
-                <h3>Platinado Premium</h3>
-                <p class="price">R$ 100,00</p>
-            </div>
+<div class="service-card">
+<h3>Carregando serviços...</h3>
+</div>
 
-        </div>
+</div>
 
-    </section>
+</section>
 
-    <section>
+<section>
 
-        <h2 class="title">Horários Disponíveis</h2>
+<h2 class="title">Horários Disponíveis</h2>
 
-        <div class="legend">
-            <span><div class="dot green"></div> Disponível</span>
-            <span><div class="dot red"></div> Ocupado</span>
-            <span><div class="dot yellow"></div> Aguardando</span>
-        </div>
+<div class="legend">
 
-        <div class="schedule-grid">
+<span>
+<div class="dot green"></div>
+Disponível
+</span>
 
-            <div class="time-card available">08:00</div>
-            <div class="time-card available">09:00</div>
-            <div class="time-card occupied">10:00</div>
-            <div class="time-card available">11:00</div>
-            <div class="time-card pending">12:00</div>
-            <div class="time-card available">13:00</div>
-            <div class="time-card available">14:00</div>
-            <div class="time-card available">15:00</div>
-            <div class="time-card available">16:00</div>
-            <div class="time-card available">17:00</div>
+<span>
+<div class="dot red"></div>
+Ocupado
+</span>
 
-        </div>
+<span>
+<div class="dot yellow"></div>
+Aguardando
+</span>
 
-        <div class="form-container">
+</div>
 
-            <h2>Solicitar Agendamento</h2>
+<div class="schedule-grid" id="listaHorarios">
 
-            <form id="formAgendamento">
+<div class="time-card available">
+Carregando horários...
+</div>
 
-                <div class="form-group">
-                    <input
-                        type="text"
-                        placeholder="Seu nome"
-                        required>
-                </div>
+</div>
 
-                <div class="form-group">
-                    <input
-                        type="tel"
-                        placeholder="WhatsApp"
-                        required>
-                </div>
+<div class="form-container">
 
-                <div class="form-group">
-                    <select required>
-                        <option>Corte Social</option>
-                        <option>Degradê</option>
-                        <option>Combo Barba + Cabelo</option>
-                        <option>Platinado Premium</option>
-                    </select>
-                </div>
+<h2>Solicitar Agendamento</h2>
 
-                <button class="btn-primary" type="submit">
-                    Confirmar Agendamento
-                </button>
+<form id="formAgendamento">
 
-            </form>
+<div class="form-group">
 
-        </div>
+<input
+id="nomeCliente"
+type="text"
+placeholder="Seu nome"
+required>
 
-    </section>
+</div>
 
-    <a
-        href="https://wa.me/5575997142719"
-        target="_blank"
-        class="whatsapp">
-        WhatsApp
-    </a>
+<div class="form-group">
 
-    <footer>
-        © 2026 Corte10 - Todos os direitos reservados.
-    </footer>
+<input
+id="telefoneCliente"
+type="tel"
+placeholder="WhatsApp"
+required>
+
+</div>
+
+<div class="form-group">
+
+<select
+id="servicoCliente"
+required>
+
+<option>
+Selecione um serviço
+</option>
+
+</select>
+
+</div>
+
+<button
+class="btn-primary"
+type="submit">
+
+Confirmar Agendamento
+
+</button>
+
+</form>
+
+</div>
+
+</section>
+
+<a
+href="https://wa.me/5575997142719"
+target="_blank"
+class="whatsapp">
+
+WhatsApp
+
+</a>
+
+<footer>
+
+© 2026 Corte10 - Todos os direitos reservados.
+
+<br><br>
+
+<a
+href="admin.html"
+class="admin-link">
+
+Painel Administrativo
+
+</a>
+
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="config.js"></script>
+
+<script src="supabase.js"></script>
+
+<script src="cliente.js"></script>
 
 </body>
 
